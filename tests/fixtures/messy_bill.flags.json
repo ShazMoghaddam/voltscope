@@ -1,0 +1,8 @@
+[
+  "RENEWAL: contract ends ~44 days out (15/10/2025) - switching window open",
+  "site[0] MPAN has 9 digits, expected 13 (check extraction): 12 3456 789",
+  "site[0] ESTIMATED read on Day - estimates are a common overcharge source",
+  "site[0] DUPLICATE charge x2: 'energy charge' at £300.0 each - possible double-billing",
+  "RECONCILE: line items sum to £615.50 but subtotal says £500.00 (diff £115.50)",
+  "LOW CONFIDENCE: supply_points[0].mpan"
+]

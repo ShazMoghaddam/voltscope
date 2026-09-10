@@ -1,0 +1,56 @@
+{
+  "supplier_name": "OVO Energy",
+  "customer_name": "REDACTED",
+  "account_number": "REDACTED",
+  "invoice_number": null,
+  "invoice_date": "24 August 2026",
+  "billing_period_start": "18 July 2026",
+  "billing_period_end": "17 August 2026",
+  "contract_end_date": "17 December 2026",
+  "currency": "GBP",
+  "supply_points": [
+    {
+      "fuel_type": "electricity",
+      "supply_address": "REDACTED, London",
+      "mpan": "2000099988877",
+      "mprn": null,
+      "meter_serial": "REDACTED",
+      "tariff_name": "1 Year Fixed Loyalty 27 November 2025 LPC",
+      "readings": [
+        {"register": "Electricity", "previous": 1568.684, "current": 1649.160, "read_type": "actual", "consumption_kwh": 80.476}
+      ],
+      "unit_rates": [
+        {"label": "Standard", "rate_p_per_kwh": 22.26}
+      ],
+      "standing_charge_p_per_day": 49.48,
+      "charges": [
+        {"description": "Energy use", "amount_gbp": 17.91},
+        {"description": "Standing charge", "amount_gbp": 15.34}
+      ]
+    },
+    {
+      "fuel_type": "gas",
+      "supply_address": "REDACTED, London",
+      "mpan": null,
+      "mprn": "9900000000",
+      "meter_serial": "REDACTED",
+      "tariff_name": "1 Year Fixed Loyalty 27 November 2025 LPC",
+      "readings": [
+        {"register": "Gas", "previous": 444.995, "current": 455.225, "read_type": "actual", "consumption_kwh": 115.626}
+      ],
+      "unit_rates": [
+        {"label": "Standard", "rate_p_per_kwh": 5.53}
+      ],
+      "standing_charge_p_per_day": 26.91,
+      "charges": [
+        {"description": "Energy use", "amount_gbp": 6.39},
+        {"description": "Standing charge", "amount_gbp": 8.34}
+      ]
+    }
+  ],
+  "subtotal_gbp": 47.98,
+  "vat_gbp": 2.40,
+  "total_gbp": 50.38,
+  "low_confidence_fields": [],
+  "extraction_notes": "Real OVO domestic dual-fuel bill; personal identifiers replaced with synthetic stand-ins."
+}

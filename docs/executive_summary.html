@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  @page { size: A4; margin: 13mm 13mm 12mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #1a1a1a; font-size: 9.2px; line-height: 1.42; margin: 0; }
+  a { color: #14504b; text-decoration: none; }
+  .accent { color: #14504b; }
+
+  /* Header */
+  header { background: #14504b; color: #fff; border-radius: 8px; padding: 16px 18px; margin-bottom: 12px; }
+  header h1 { margin: 0; font-size: 26px; letter-spacing: .3px; font-weight: 700; }
+  header .tag { font-size: 12px; font-weight: 600; margin-top: 3px; color: #d7e6e3; }
+  header .sub { font-size: 9.5px; margin-top: 5px; color: #cfe0dd; max-width: 78%; }
+  .chips { margin-top: 9px; }
+  .chip { display: inline-block; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.28); color: #fff; font-size: 7.6px; padding: 2px 7px; border-radius: 10px; margin: 0 4px 4px 0; }
+  .head-links { margin-top: 9px; font-size: 8px; color: #cfe0dd; border-top: 1px solid rgba(255,255,255,.22); padding-top: 7px; }
+  .head-links a { color: #eaf3f1; }
+  .head-links .by { float: right; color: #bcd3cf; }
+
+  /* Sections */
+  section { margin-bottom: 11px; page-break-inside: avoid; }
+  .sec-h { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; }
+  .num { background: #14504b; color: #fff; font-size: 8px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .sec-h h2 { margin: 0; font-size: 10.5px; text-transform: uppercase; letter-spacing: .6px; color: #14504b; }
+  .lead { color: #2a3a37; }
+
+  /* Stats */
+  .stats { display: flex; gap: 7px; margin-top: 8px; }
+  .stat { flex: 1; border: 1px solid #dfe5e4; border-radius: 6px; padding: 7px 8px; background: #f7faf9; }
+  .stat .n { font-size: 17px; font-weight: 700; color: #14504b; line-height: 1; }
+  .stat .l { font-size: 7.3px; color: #5b6b68; margin-top: 3px; text-transform: uppercase; letter-spacing: .3px; }
+
+  /* Two-column grids */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 16px; }
+  .feat b { color: #14504b; }
+  .feat { margin-bottom: 2px; }
+
+  /* Architecture rows */
+  .arch { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 16px; }
+  .arch .row { border-bottom: 1px solid #eef2f1; padding: 2px 0; }
+  .arch .k { color: #14504b; font-weight: 700; }
+  .arch .v { color: #4b5b58; }
+
+  /* Commercial table */
+  table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  th { background: #14504b; color: #fff; font-size: 8px; text-align: left; padding: 5px 7px; font-weight: 600; }
+  td { border: 1px solid #dfe5e4; padding: 5px 7px; vertical-align: top; }
+  td .price { font-weight: 700; color: #14504b; font-size: 10px; }
+  td .who { color: #5b6b68; font-size: 8px; }
+  .note { font-size: 7.4px; color: #8a9793; margin-top: 3px; font-style: italic; }
+
+  /* Footer */
+  footer { margin-top: 13px; border-top: 2px solid #14504b; padding-top: 8px; }
+  .foot-links { display: flex; gap: 14px; }
+  .foot-links div { font-size: 8px; }
+  .foot-links .lab { color: #14504b; font-weight: 700; text-transform: uppercase; letter-spacing: .3px; font-size: 7px; }
+  .strip { margin-top: 8px; font-size: 7.6px; color: #6b7a77; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Voltscope</h1>
+  <div class="tag">Stop overpaying for energy. Start checking every bill.</div>
+  <div class="sub">Automated extraction, validation and intelligence for UK electricity and gas bills &mdash; the bill-intelligence module of the VoltEdge family.</div>
+  <div class="chips">
+    <span class="chip">AI Extraction</span>
+    <span class="chip">Deterministic Validation</span>
+    <span class="chip">Renewal Alerts</span>
+    <span class="chip">Duplicate-Charge Detection</span>
+    <span class="chip">Portfolio Insights</span>
+    <span class="chip">JSON / Excel / CSV Export</span>
+    <span class="chip">REST API</span>
+  </div>
+  <div class="head-links">
+    <a href="https://shazmoghaddam.github.io">shazmoghaddam.github.io</a> &middot;
+    <a href="https://linkedin.com/in/shazmoghaddam">linkedin.com/in/shazmoghaddam</a> &middot;
+    <a href="https://github.com/ShazMoghaddam">github.com/ShazMoghaddam</a>
+    <span class="by">Developed by Shaz Moghaddam &middot; London, UK</span>
+  </div>
+</header>
+
+<section>
+  <div class="sec-h"><span class="num">01</span><h2>The problem we solve</h2></div>
+  <div class="lead">UK businesses and households are routinely overbilled on energy, and almost nobody checks. Bills arrive as PDFs and phone photos in dozens of supplier-specific layouts, burying the figures that matter &mdash; MPAN, unit rates, standing charges, meter reads and contract dates. Estimated reads overcharge, duplicate line items slip through, totals quietly fail to add up, and fixed contracts roll onto expensive out-of-contract rates because renewal dates go unnoticed. Checking this by hand across a portfolio is slow and error-prone. Voltscope reads each bill, validates every figure, and flags exactly what is wrong &mdash; deterministically, in seconds.</div>
+  <div class="stats">
+    <div class="stat"><div class="n">50</div><div class="l">Automated tests passing</div></div>
+    <div class="stat"><div class="n">10</div><div class="l">Deterministic validation checks</div></div>
+    <div class="stat"><div class="n">7</div><div class="l">Bill formats accepted</div></div>
+    <div class="stat"><div class="n">1</div><div class="l">API call per bill (cents each)</div></div>
+    <div class="stat"><div class="n">0</div><div class="l">LLM calls in validation &amp; analytics</div></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-h"><span class="num">02</span><h2>Key features</h2></div>
+  <div class="grid2">
+    <div class="feat"><b>Structured extraction</b> &mdash; Every field from any UK electricity or gas bill: supplier, MPAN/MPRN, tariffs, unit rates, standing charges, meter reads, charges and totals.</div>
+    <div class="feat"><b>Deterministic validation</b> &mdash; Ten registered checks, each finding carrying a severity, category and a plain-English recommendation.</div>
+    <div class="feat"><b>Human-in-the-loop review</b> &mdash; Web interface to review extracted fields beside findings, correct anything, and re-validate instantly on save.</div>
+    <div class="feat"><b>Portfolio intelligence</b> &mdash; Renewal alerts, estimated-read reports, duplicate-charge detection with quantified overcharge, spend summaries and supplier comparison.</div>
+    <div class="feat"><b>Multi-page &amp; HEIC</b> &mdash; Combine several photos into one bill; iPhone HEIC handled automatically alongside PDF, PNG, JPG, WEBP and GIF.</div>
+    <div class="feat"><b>High-unit-rate flags</b> &mdash; Tariffs above a portfolio-relative baseline surfaced automatically, adapting as the portfolio grows.</div>
+    <div class="feat"><b>Export</b> &mdash; JSON, a four-sheet Excel workbook and CSV for auditors, accountants and spreadsheets.</div>
+    <div class="feat"><b>REST API &amp; audit trail</b> &mdash; Full OpenAPI/Swagger docs, API-key auth, SQLite persistence and processing history.</div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-h"><span class="num">03</span><h2>Technical architecture</h2></div>
+  <div class="arch">
+    <div class="row"><span class="k">Extraction</span> <span class="v">&mdash; Anthropic Claude API &middot; vision over PDF &amp; images &middot; conservative JSON schema</span></div>
+    <div class="row"><span class="k">Backend</span> <span class="v">&mdash; FastAPI &middot; Uvicorn &middot; Pydantic v2</span></div>
+    <div class="row"><span class="k">Validation</span> <span class="v">&mdash; Registry of deterministic checks &middot; typed Finding model</span></div>
+    <div class="row"><span class="k">Intelligence</span> <span class="v">&mdash; Pure-Python analytics &middot; zero LLM calls</span></div>
+    <div class="row"><span class="k">Data layer</span> <span class="v">&mdash; SQLite &middot; lossless JSON + queryable columns &middot; history</span></div>
+    <div class="row"><span class="k">Frontend</span> <span class="v">&mdash; Dependency-free vanilla JavaScript &middot; single file</span></div>
+    <div class="row"><span class="k">Export</span> <span class="v">&mdash; openpyxl (Excel) &middot; CSV &middot; JSON</span></div>
+    <div class="row"><span class="k">Auth</span> <span class="v">&mdash; API-key (X-API-Key) &middot; OpenAPI security scheme</span></div>
+    <div class="row"><span class="k">Testing</span> <span class="v">&mdash; 50 tests &middot; golden fixtures &middot; pytest</span></div>
+    <div class="row"><span class="k">Deployment</span> <span class="v">&mdash; Docker &middot; Render blueprint &middot; $PORT-ready</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-h"><span class="num">04</span><h2>Who it&rsquo;s for</h2></div>
+  <div class="grid2">
+    <div class="feat"><b>Energy consultancies &amp; brokers</b> &mdash; audit client bills at scale, surface overcharges, white-label via the API.</div>
+    <div class="feat"><b>Multi-site commercial operators</b> &mdash; portfolios of bills with renewal tracking and spend comparison.</div>
+    <div class="feat"><b>SMEs</b> &mdash; catch billing errors without a dedicated energy analyst.</div>
+    <div class="feat"><b>Bookkeepers &amp; accountants</b> &mdash; validated energy data straight into the ledger.</div>
+    <div class="feat"><b>Property portfolios</b> &mdash; hotels, retail chains and student accommodation.</div>
+    <div class="feat"><b>VoltEdge integration</b> &mdash; feeds validated bill data into the wider VoltEdge energy-intelligence platform.</div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-h"><span class="num">05</span><h2>Commercial model</h2></div>
+  <table>
+    <tr><th>Self-serve SaaS</th><th>API licence</th><th>White-label / OEM</th><th>Enterprise</th></tr>
+    <tr>
+      <td><div class="price">&pound;29&ndash;&pound;99</div>per user / month<div class="who">SMEs &amp; bookkeepers</div></td>
+      <td><div class="price">Per-call</div>or flat rate<div class="who">Integrations &amp; consultancies</div></td>
+      <td><div class="price">Custom</div>per client tier<div class="who">Brokers auditing 50&ndash;200 clients</div></td>
+      <td><div class="price">Custom SLA</div>annual<div class="who">Multi-site operators &amp; audit needs</div></td>
+    </tr>
+  </table>
+  <div class="note">Illustrative pricing for a productised version; the current build is an open, MIT-licensed portfolio project.</div>
+</section>
+
+<section>
+  <div class="sec-h"><span class="num">06</span><h2>Future roadmap</h2></div>
+  <div class="grid2">
+    <div class="feat"><b>Automatic multi-page detection</b> &mdash; group a bill&rsquo;s pages without manual selection.</div>
+    <div class="feat"><b>Broader bill types</b> &mdash; water, telecoms and waste beyond energy.</div>
+    <div class="feat"><b>Historical trends</b> &mdash; track a site&rsquo;s rates and consumption over time.</div>
+    <div class="feat"><b>Anomaly baselines</b> &mdash; flag bills that deviate from a site&rsquo;s own history.</div>
+    <div class="feat"><b>Accounting integrations</b> &mdash; Xero, QuickBooks and Sage export.</div>
+    <div class="feat"><b>Scale-out</b> &mdash; PostgreSQL and multi-tenant isolation beyond single-instance SQLite.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-links">
+    <div><div class="lab">Portfolio</div><a href="https://shazmoghaddam.github.io">shazmoghaddam.github.io</a></div>
+    <div><div class="lab">LinkedIn</div><a href="https://linkedin.com/in/shazmoghaddam">linkedin.com/in/shazmoghaddam</a></div>
+    <div><div class="lab">GitHub</div><a href="https://github.com/ShazMoghaddam">github.com/ShazMoghaddam</a></div>
+    <div><div class="lab">Deploy</div>Docker &middot; Render-ready</div>
+  </div>
+  <div class="strip">Voltscope &middot; Energy Bill Intelligence &middot; Developed by Shaz Moghaddam &middot; London, UK &middot; MIT Licence &middot; Commercial licensing available</div>
+</footer>
+
+</body>
+</html>

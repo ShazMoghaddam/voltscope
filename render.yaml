@@ -1,0 +1,29 @@
+# Render Blueprint for Voltscope (https://render.com/docs/blueprint-spec)
+#
+# Deploy with: Render dashboard -> New -> Blueprint -> point at this repo.
+# A persistent disk keeps the SQLite database across restarts and deploys.
+# Note: disks require a paid instance type; on the free plan the filesystem is
+# ephemeral and the database resets on each deploy. For horizontal scaling
+# (more than one instance) move off SQLite to a managed Postgres.
+
+services:
+  - type: web
+    name: voltscope
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn --factory voltscope.api.app:get_app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.6"
+      - key: ANTHROPIC_API_KEY
+        sync: false          # set in the Render dashboard (secret)
+      - key: VOLTSCOPE_API_KEYS
+        sync: false          # comma-separated API keys; enables auth
+      - key: VOLTSCOPE_DB
+        value: /data/voltscope.db
+    disk:
+      name: voltscope-data
+      mountPath: /data
+      sizeGB: 1

@@ -1,0 +1,33 @@
+{
+  "supplier_name": "Thames Water",
+  "customer_name": "REDACTED",
+  "account_number": "REDACTED",
+  "invoice_number": null,
+  "invoice_date": "3 March 2026",
+  "billing_period_start": "1 April 2026",
+  "billing_period_end": "31 March 2027",
+  "contract_end_date": null,
+  "currency": "GBP",
+  "supply_points": [
+    {
+      "fuel_type": "unknown",
+      "supply_address": "REDACTED, London",
+      "mpan": null,
+      "mprn": null,
+      "meter_serial": null,
+      "tariff_name": "Assessed Household Charge (2 bedrooms)",
+      "readings": [],
+      "unit_rates": [],
+      "standing_charge_p_per_day": null,
+      "charges": [
+        {"description": "Fresh water", "amount_gbp": 369.96},
+        {"description": "Wastewater", "amount_gbp": 290.45}
+      ]
+    }
+  ],
+  "subtotal_gbp": 660.41,
+  "vat_gbp": null,
+  "total_gbp": 660.41,
+  "low_confidence_fields": [],
+  "extraction_notes": "Water bill pushed through the energy schema; identifiers redacted."
+}

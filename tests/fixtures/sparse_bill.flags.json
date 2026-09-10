@@ -1,0 +1,5 @@
+[
+  "MISSING required fields: supplier_name, billing_period_start, total_gbp",
+  "MISSING supply_points (no site/meter data extracted)",
+  "LOW CONFIDENCE: total_gbp"
+]

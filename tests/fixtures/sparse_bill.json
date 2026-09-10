@@ -1,0 +1,17 @@
+{
+  "supplier_name": null,
+  "customer_name": "Someone Ltd",
+  "account_number": null,
+  "invoice_number": null,
+  "invoice_date": null,
+  "billing_period_start": null,
+  "billing_period_end": "2025-01-31",
+  "contract_end_date": null,
+  "currency": "GBP",
+  "supply_points": [],
+  "subtotal_gbp": null,
+  "vat_gbp": null,
+  "total_gbp": null,
+  "low_confidence_fields": ["total_gbp"],
+  "extraction_notes": null
+}

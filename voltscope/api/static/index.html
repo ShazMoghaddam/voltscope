@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Voltscope Review</title>
+<style>
+  :root {
+    --err: #b00020; --warn: #9a6700; --info: #0b5f99;
+    --line: #e2e2e2; --bg: #fafafa; --panel: #fff; --muted: #666; --accent: #14504b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    color: #1a1a1a; background: var(--bg);
+  }
+  header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 18px; background: var(--accent); color: #fff;
+  }
+  header h1 { font-size: 17px; margin: 0; font-weight: 600; letter-spacing: .2px; }
+  header .sub { font-size: 12px; opacity: .8; }
+  header .spacer { flex: 1; }
+  header button { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.3); }
+  .navbtn.active { background: #fff; color: var(--accent); font-weight: 600; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-bottom: 18px; }
+  .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+  .stat .n { font-size: 24px; font-weight: 700; }
+  .stat .l { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; }
+  table.data { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.data th { text-align: left; border-bottom: 2px solid var(--line); padding: 6px 8px; font-size: 12px; color: var(--muted); }
+  table.data td { border-bottom: 1px solid var(--line); padding: 6px 8px; }
+  .hist { font-size: 13px; }
+  .hist .row { display: flex; gap: 10px; padding: 4px 0; border-bottom: 1px solid var(--line); }
+  .hist .ev { font-weight: 600; width: 90px; text-transform: capitalize; }
+  .hist .at { color: var(--muted); width: 160px; }
+  #warn-banner {
+    display: none; background: #fff3cd; color: #7a5b00; padding: 8px 18px;
+    border-bottom: 1px solid #f0e0a0; font-size: 13px;
+  }
+  main { display: grid; grid-template-columns: 340px 1fr; gap: 0; min-height: calc(100vh - 49px); }
+  #left { border-right: 1px solid var(--line); background: var(--panel); display: flex; flex-direction: column; }
+  #drop {
+    margin: 14px; padding: 22px 14px; border: 2px dashed #bcbcbc; border-radius: 8px;
+    text-align: center; color: var(--muted); cursor: pointer; transition: .15s;
+  }
+  #drop.drag { border-color: var(--accent); background: #eef6f5; color: var(--accent); }
+  #drop small { display: block; margin-top: 4px; font-size: 12px; }
+  .merge-opt { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin: -6px 14px 8px; cursor: pointer; }
+  #list { overflow-y: auto; flex: 1; }
+  .item { padding: 10px 14px; border-bottom: 1px solid var(--line); cursor: pointer; }
+  .item:hover { background: #f4f7f7; }
+  .item.active { background: #e7f0ef; border-left: 3px solid var(--accent); padding-left: 11px; }
+  .item .fn { font-weight: 600; font-size: 13px; word-break: break-all; }
+  .item .meta { font-size: 12px; color: var(--muted); margin-top: 3px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .chip { font-size: 11px; padding: 1px 6px; border-radius: 10px; color: #fff; }
+  .chip.err { background: var(--err); } .chip.warn { background: var(--warn); } .chip.info { background: var(--info); }
+  .status { font-size: 11px; text-transform: uppercase; letter-spacing: .3px; padding: 1px 6px; border-radius: 3px; border: 1px solid var(--line); }
+  .status.processed { color: #256029; border-color: #b7dfb9; }
+  .status.edited { color: #0b5f99; border-color: #b3d4f0; }
+  .status.failed { color: var(--err); border-color: #eab3ba; }
+  #right { padding: 18px 22px; overflow-y: auto; }
+  #empty { color: var(--muted); margin-top: 40px; text-align: center; }
+  .toolbar { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+  .toolbar .grow { flex: 1; }
+  h2 { font-size: 16px; margin: 0; word-break: break-all; }
+  button {
+    font: inherit; font-size: 13px; padding: 6px 12px; border: 1px solid #cfcfcf;
+    background: #fff; border-radius: 6px; cursor: pointer;
+  }
+  button:hover { background: #f2f2f2; }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  button.primary:hover { background: #0f3d39; }
+  button.danger { color: var(--err); border-color: #e5b9be; }
+  section.card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
+  section.card h3 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); }
+  .findings .f { border-left: 3px solid #ccc; padding: 6px 10px; margin-bottom: 8px; background: #fbfbfb; border-radius: 0 4px 4px 0; }
+  .findings .f.ERROR { border-color: var(--err); }
+  .findings .f.WARNING { border-color: var(--warn); }
+  .findings .f.INFO { border-color: var(--info); }
+  .findings .f .sv { font-size: 11px; font-weight: 700; }
+  .findings .f.ERROR .sv { color: var(--err); } .findings .f.WARNING .sv { color: var(--warn); } .findings .f.INFO .sv { color: var(--info); }
+  .findings .f .msg { font-size: 13px; }
+  .findings .f .rec { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+  label.field { display: flex; flex-direction: column; font-size: 12px; color: var(--muted); gap: 3px; }
+  label.field input, label.field select {
+    font: inherit; font-size: 13px; padding: 5px 7px; border: 1px solid #cfcfcf; border-radius: 5px; color: #1a1a1a;
+  }
+  .sp { border: 1px solid var(--line); border-radius: 6px; padding: 12px; margin-bottom: 12px; }
+  .sp h4 { margin: 0 0 8px; font-size: 13px; }
+  table.rows { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 13px; }
+  table.rows th { text-align: left; font-size: 11px; color: var(--muted); font-weight: 600; padding: 2px 4px; }
+  table.rows td { padding: 2px 4px; }
+  table.rows input, table.rows select { width: 100%; font: inherit; font-size: 13px; padding: 4px 6px; border: 1px solid #d5d5d5; border-radius: 4px; }
+  .rowbtns { margin-top: 6px; display: flex; gap: 6px; }
+  .rowbtns button { padding: 3px 9px; font-size: 12px; }
+  .tiny { font-size: 12px; color: var(--muted); }
+  #saved { color: #256029; font-size: 13px; display: none; }
+  .app-footer { text-align: center; padding: 14px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); background: var(--panel); }
+  .app-footer a { color: var(--accent); text-decoration: none; }
+  .app-footer a:hover { text-decoration: underline; }
+  .about { position: relative; margin: 14px 18px 0; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 8px; padding: 16px 44px 16px 18px; }
+  .about-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+  .about h3 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; color: var(--accent); }
+  .about p { margin: 0; font-size: 13px; color: #333; line-height: 1.5; }
+  .about-close { position: absolute; top: 8px; right: 10px; border: none; background: none; font-size: 20px; line-height: 1; color: var(--muted); cursor: pointer; padding: 2px 8px; }
+  .about-close:hover { color: #000; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Voltscope Review</h1>
+    <div class="sub">Extract, validate and correct UK energy bills</div>
+  </div>
+  <div class="spacer"></div>
+  <button id="nav-about" class="navbtn">About</button>
+  <button id="nav-review" class="navbtn active">Review</button>
+  <button id="nav-dashboard" class="navbtn">Dashboard</button>
+  <button id="nav-insights" class="navbtn">Insights</button>
+  <button id="export-all">Export all (Excel)</button>
+  <button id="export-all-csv">Export all (CSV)</button>
+</header>
+<section id="about" class="about">
+  <button class="about-close" id="about-close" title="Hide">&times;</button>
+  <div class="about-grid">
+    <div>
+      <h3>What it is</h3>
+      <p>Voltscope reads photos or PDFs of UK energy bills and turns them into structured, checked data. Upload a bill and it pulls out every field &mdash; supplier, meter points, tariffs, reads and charges &mdash; validates the figures, and flags anything that looks wrong.</p>
+    </div>
+    <div>
+      <h3>Built with</h3>
+      <p>Python, FastAPI and Pydantic on the back end, SQLite for storage, and the Anthropic Claude API for reading the bills, with a dependency-free vanilla-JavaScript interface. All validation and analytics are deterministic &mdash; no model calls, no build step &mdash; and the whole thing is test-covered and deploy-ready.</p>
+    </div>
+    <div>
+      <h3>Why it helps</h3>
+      <p>It catches money leaks: duplicate charges, estimated reads that tend to overcharge, and totals that don&rsquo;t reconcile. It warns when a fixed contract is nearing its end so you can switch before out-of-contract rates hit, and compares spend and unit rates across every supplier in your portfolio.</p>
+    </div>
+  </div>
+</section>
+<div id="warn-banner">Extraction is unavailable: no ANTHROPIC_API_KEY is set on the server. You can view, edit and export, but new uploads will fail.</div>
+
+<main>
+  <div id="left">
+    <div id="drop">
+      Drop bills here or click to choose
+      <small>PDF, PNG, JPG, HEIC, WEBP, GIF</small>
+    </div>
+    <input id="file-input" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.heic,.heif" hidden />
+    <label class="merge-opt"><input type="checkbox" id="merge-toggle" /> Combine files into one bill (multi-page)</label>
+    <div id="list"></div>
+  </div>
+
+  <div id="right">
+    <div id="empty">Select a bill to review, or drop files to begin.</div>
+    <div id="detail" style="display:none;"></div>
+  </div>
+</main>
+
+<section id="dashboard-view" style="display:none; padding:18px 22px;">
+  <div id="dash-stats" class="stats"></div>
+  <section class="card">
+    <h3>Upcoming contract renewals (within 120 days)</h3>
+    <div id="dash-renewals"></div>
+  </section>
+  <section class="card">
+    <h3>Suppliers</h3>
+    <div id="dash-suppliers"></div>
+  </section>
+  <section class="card">
+    <h3>Recent activity</h3>
+    <div id="dash-history" class="hist"></div>
+  </section>
+</section>
+
+<section id="insights-view" style="display:none; padding:18px 22px;">
+  <section class="card findings"><h3>Needs attention</h3><div id="ins-alerts"></div></section>
+  <div class="stats" id="ins-portfolio"></div>
+  <section class="card"><h3>Upcoming renewals</h3><div id="ins-renewals"></div></section>
+  <section class="card"><h3>High unit rates</h3><div id="ins-rates"></div></section>
+  <section class="card"><h3>Duplicate charges</h3><div id="ins-dupes"></div></section>
+  <section class="card"><h3>Estimated reads</h3><div id="ins-estimated"></div></section>
+  <section class="card"><h3>Spend by supplier</h3><div id="ins-spend-supplier"></div></section>
+  <section class="card"><h3>Spend by month</h3><div id="ins-spend-month"></div></section>
+  <section class="card"><h3>Supplier comparison</h3><div id="ins-suppliers"></div></section>
+</section>
+
+<script>
+const NUMERIC = new Set([
+  "subtotal_gbp","vat_gbp","total_gbp","standing_charge_p_per_day",
+  "amount_gbp","rate_p_per_kwh","previous","current","consumption_kwh",
+]);
+const READ_TYPES = ["actual","estimated","customer","unknown"];
+const FUEL_TYPES = ["electricity","gas","unknown"];
+
+let state = { bills: [], selectedId: null, bill: null };
+
+const $ = (sel, el=document) => el.querySelector(sel);
+const el = (tag, props={}, kids=[]) => {
+  const n = document.createElement(tag);
+  for (const [k,v] of Object.entries(props)) {
+    if (k === "class") n.className = v;
+    else if (k === "text") n.textContent = v;
+    else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+    else if (v !== null && v !== undefined) n.setAttribute(k, v);
+  }
+  for (const kid of [].concat(kids)) if (kid) n.append(kid);
+  return n;
+};
+
+function coerce(key, raw) {
+  if (raw === "" || raw === null || raw === undefined) return null;
+  if (NUMERIC.has(key)) { const n = Number(raw); return Number.isNaN(n) ? null : n; }
+  return raw;
+}
+
+function authHeaders() {
+  const k = sessionStorage.getItem("vs_api_key");
+  return k ? { "X-API-Key": k } : {};
+}
+
+function promptKey(force) {
+  let k = sessionStorage.getItem("vs_api_key");
+  if (k && !force) return k;
+  k = window.prompt("Enter your Voltscope API key:", "");
+  if (k) sessionStorage.setItem("vs_api_key", k);
+  return k;
+}
+
+async function api(path, opts = {}) {
+  const headers = Object.assign({}, opts.headers || {}, authHeaders());
+  const res = await fetch(path, Object.assign({}, opts, { headers }));
+  if (res.status === 401) { promptKey(true); throw new Error("Unauthorized: check your API key."); }
+  if (!res.ok) throw new Error((await res.text()) || res.statusText);
+  const ct = res.headers.get("content-type") || "";
+  return ct.includes("application/json") ? res.json() : res;
+}
+
+async function download(url, filename) {
+  const res = await fetch(url, { headers: authHeaders() });
+  if (res.status === 401) { promptKey(true); alert("Unauthorized: check your API key."); return; }
+  if (!res.ok) { alert("Download failed: " + res.status); return; }
+  const blob = await res.blob();
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename || "download";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function severityCounts(findings) {
+  const c = { ERROR:0, WARNING:0, INFO:0 };
+  for (const f of findings || []) c[f.severity] = (c[f.severity]||0)+1;
+  return c;
+}
+
+/* ---------- list ---------- */
+async function refreshList(selectId) {
+  state.bills = await api("/api/bills");
+  renderList();
+  if (selectId) selectBill(selectId);
+}
+
+function renderList() {
+  const list = $("#list");
+  list.innerHTML = "";
+  if (!state.bills.length) {
+    list.append(el("div", { class: "tiny", style: "padding:14px;", text: "No bills yet." }));
+    return;
+  }
+  for (const b of state.bills) {
+    const c = severityCounts(b.findings);
+    const meta = el("div", { class: "meta" }, [
+      el("span", { class: "status " + b.status, text: b.status }),
+    ]);
+    if (c.ERROR) meta.append(el("span", { class: "chip err", text: "E " + c.ERROR }));
+    if (c.WARNING) meta.append(el("span", { class: "chip warn", text: "W " + c.WARNING }));
+    if (c.INFO) meta.append(el("span", { class: "chip info", text: "I " + c.INFO }));
+    const item = el("div", {
+      class: "item" + (b.id === state.selectedId ? " active" : ""),
+      onclick: () => selectBill(b.id),
+    }, [
+      el("div", { class: "fn", text: b.filename }),
+      meta,
+    ]);
+    list.append(item);
+  }
+}
+
+/* ---------- detail ---------- */
+async function selectBill(id) {
+  state.selectedId = id;
+  const rec = await api("/api/bills/" + id);
+  state.bill = rec.bill || {};
+  renderList();
+  renderDetail(rec);
+}
+
+function fieldInput(obj, key, label) {
+  const val = obj[key];
+  const input = el("input", { value: val === null || val === undefined ? "" : val });
+  input.addEventListener("change", () => { obj[key] = coerce(key, input.value); });
+  return el("label", { class: "field" }, [ el("span", { text: label }), input ]);
+}
+
+function selectInput(obj, key, label, options) {
+  const sel = el("select");
+  for (const opt of ["", ...options]) {
+    const o = el("option", { value: opt, text: opt || "-" });
+    if ((obj[key] || "") === opt) o.selected = true;
+    sel.append(o);
+  }
+  sel.addEventListener("change", () => { obj[key] = sel.value || null; });
+  return el("label", { class: "field" }, [ el("span", { text: label }), sel ]);
+}
+
+function rowsTable(cols, arr, makeEmpty) {
+  const table = el("table", { class: "rows" });
+  const head = el("tr");
+  for (const c of cols) head.append(el("th", { text: c.label }));
+  head.append(el("th", { text: "" }));
+  table.append(head);
+
+  function addRowEl(row) {
+    const tr = el("tr");
+    for (const c of cols) {
+      const td = el("td");
+      let inp;
+      if (c.options) {
+        inp = el("select");
+        for (const opt of ["", ...c.options]) {
+          const o = el("option", { value: opt, text: opt || "-" });
+          if ((row[c.key] || "") === opt) o.selected = true;
+          inp.append(o);
+        }
+        inp.addEventListener("change", () => { row[c.key] = inp.value || null; });
+      } else {
+        inp = el("input", { value: row[c.key] === null || row[c.key] === undefined ? "" : row[c.key] });
+        inp.addEventListener("change", () => { row[c.key] = coerce(c.key, inp.value); });
+      }
+      td.append(inp); tr.append(td);
+    }
+    const del = el("td", {}, [ el("button", { text: "✕", onclick: () => { arr.splice(arr.indexOf(row),1); tr.remove(); } }) ]);
+    tr.append(del);
+    table.append(tr);
+  }
+  for (const row of arr) addRowEl(row);
+  const add = el("div", { class: "rowbtns" }, [
+    el("button", { text: "+ Add row", onclick: () => { const r = makeEmpty(); arr.push(r); addRowEl(r); } }),
+  ]);
+  return el("div", {}, [ table, add ]);
+}
+
+function renderSupplyPoint(sp, idx) {
+  sp.readings = sp.readings || [];
+  sp.charges = sp.charges || [];
+  sp.unit_rates = sp.unit_rates || [];
+  const wrap = el("div", { class: "sp" }, [ el("h4", { text: "Supply point " + idx }) ]);
+  wrap.append(el("div", { class: "grid" }, [
+    selectInput(sp, "fuel_type", "Fuel", FUEL_TYPES),
+    fieldInput(sp, "supply_address", "Supply address"),
+    fieldInput(sp, "mpan", "MPAN"),
+    fieldInput(sp, "mprn", "MPRN"),
+    fieldInput(sp, "meter_serial", "Meter serial"),
+    fieldInput(sp, "tariff_name", "Tariff"),
+    fieldInput(sp, "standing_charge_p_per_day", "Standing charge (p/day)"),
+  ]));
+  wrap.append(el("div", { class: "tiny", style: "margin-top:8px;", text: "Readings" }));
+  wrap.append(rowsTable(
+    [ {key:"register",label:"Register"}, {key:"previous",label:"Previous"}, {key:"current",label:"Current"},
+      {key:"read_type",label:"Read type",options:READ_TYPES}, {key:"consumption_kwh",label:"kWh"} ],
+    sp.readings, () => ({register:null,previous:null,current:null,read_type:"unknown",consumption_kwh:null})));
+  wrap.append(el("div", { class: "tiny", style: "margin-top:8px;", text: "Unit rates" }));
+  wrap.append(rowsTable(
+    [ {key:"label",label:"Label"}, {key:"rate_p_per_kwh",label:"Rate (p/kWh)"} ],
+    sp.unit_rates, () => ({label:null,rate_p_per_kwh:null})));
+  wrap.append(el("div", { class: "tiny", style: "margin-top:8px;", text: "Charges" }));
+  wrap.append(rowsTable(
+    [ {key:"description",label:"Description"}, {key:"amount_gbp",label:"Amount (GBP)"} ],
+    sp.charges, () => ({description:null,amount_gbp:null})));
+  return wrap;
+}
+
+function renderDetail(rec) {
+  $("#empty").style.display = "none";
+  const d = $("#detail");
+  d.style.display = "block";
+  d.innerHTML = "";
+  const bill = state.bill;
+
+  const toolbar = el("div", { class: "toolbar" }, [
+    el("h2", { text: rec.filename }),
+    el("span", { class: "status " + rec.status, text: rec.status }),
+    el("span", { class: "grow" }),
+    el("span", { id: "saved", text: "Saved ✓" }),
+    el("button", { class: "primary", text: "Save changes", onclick: () => saveEdits(rec.id) }),
+    el("button", { text: "Export JSON", onclick: () => download("/api/bills/" + rec.id + "/export.json", rec.id + ".json") }),
+    el("button", { text: "Export Excel", onclick: () => download("/api/bills/" + rec.id + "/export.xlsx", rec.id + ".xlsx") }),
+    el("button", { text: "Export CSV", onclick: () => download("/api/bills/" + rec.id + "/export.csv", rec.id + ".csv") }),
+    el("button", { class: "danger", text: "Delete", onclick: () => deleteBill(rec.id) }),
+  ]);
+  d.append(toolbar);
+
+  if (rec.status === "failed") {
+    d.append(el("section", { class: "card" }, [
+      el("h3", { text: "Extraction failed" }),
+      el("div", { class: "tiny", text: rec.error || "Unknown error" }),
+    ]));
+    return;
+  }
+
+  // findings
+  const fcard = el("section", { class: "card findings" }, [ el("h3", { text: "Findings (" + rec.findings.length + ")" }) ]);
+  if (!rec.findings.length) fcard.append(el("div", { class: "tiny", text: "No findings. Nothing flagged." }));
+  for (const f of rec.findings) {
+    fcard.append(el("div", { class: "f " + f.severity }, [
+      el("div", {}, [ el("span", { class: "sv", text: f.severity }), el("span", { class: "msg", text: "  " + f.message }) ]),
+      f.recommendation ? el("div", { class: "rec", text: f.recommendation }) : null,
+    ]));
+  }
+  d.append(fcard);
+
+  // top-level fields
+  const top = el("section", { class: "card" }, [ el("h3", { text: "Bill fields" }) ]);
+  top.append(el("div", { class: "grid" }, [
+    fieldInput(bill, "supplier_name", "Supplier"),
+    fieldInput(bill, "customer_name", "Customer"),
+    fieldInput(bill, "account_number", "Account #"),
+    fieldInput(bill, "invoice_number", "Invoice #"),
+    fieldInput(bill, "invoice_date", "Invoice date"),
+    fieldInput(bill, "billing_period_start", "Period start"),
+    fieldInput(bill, "billing_period_end", "Period end"),
+    fieldInput(bill, "contract_end_date", "Contract end"),
+    fieldInput(bill, "currency", "Currency"),
+    fieldInput(bill, "subtotal_gbp", "Subtotal (GBP)"),
+    fieldInput(bill, "vat_gbp", "VAT (GBP)"),
+    fieldInput(bill, "total_gbp", "Total (GBP)"),
+  ]));
+  d.append(top);
+
+  // supply points
+  bill.supply_points = bill.supply_points || [];
+  const spcard = el("section", { class: "card" }, [ el("h3", { text: "Supply points (" + bill.supply_points.length + ")" }) ]);
+  bill.supply_points.forEach((sp, i) => spcard.append(renderSupplyPoint(sp, i)));
+  spcard.append(el("div", { class: "rowbtns" }, [
+    el("button", { text: "+ Add supply point", onclick: () => {
+      bill.supply_points.push({ fuel_type:"unknown", readings:[], unit_rates:[], charges:[] });
+      renderDetail(rec);
+    } }),
+  ]));
+  d.append(spcard);
+}
+
+async function saveEdits(id) {
+  const rec = await api("/api/bills/" + id, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(state.bill),
+  });
+  state.bill = rec.bill || {};
+  await refreshList(id);
+  const saved = $("#saved");
+  if (saved) { saved.style.display = "inline"; setTimeout(() => { saved.style.display = "none"; }, 1800); }
+}
+
+async function deleteBill(id) {
+  await fetch("/api/bills/" + id, { method: "DELETE" });
+  state.selectedId = null; state.bill = null;
+  $("#detail").style.display = "none";
+  $("#empty").style.display = "block";
+  await refreshList();
+}
+
+/* ---------- upload ---------- */
+async function upload(files) {
+  if (!files || !files.length) return;
+  const form = new FormData();
+  for (const f of files) form.append("files", f);
+  const merge = $("#merge-toggle") && $("#merge-toggle").checked && files.length > 1;
+  const url = "/api/bills" + (merge ? "?merge=true" : "");
+  const drop = $("#drop");
+  drop.textContent = merge ? "Processing 1 bill (" + files.length + " pages)..." : "Processing " + files.length + " file(s)...";
+  try {
+    const recs = await api(url, { method: "POST", body: form });
+    await refreshList(recs.length ? recs[0].id : null);
+  } catch (e) {
+    alert("Upload failed: " + e.message);
+  } finally {
+    drop.innerHTML = 'Drop bills here or click to choose<small>PDF, PNG, JPG, HEIC, WEBP, GIF</small>';
+  }
+}
+
+/* ---------- dashboard ---------- */
+function statCard(n, label) {
+  return el("div", { class: "stat" }, [ el("div", { class: "n", text: String(n) }), el("div", { class: "l", text: label }) ]);
+}
+
+async function loadDashboard() {
+  const [d, hist] = await Promise.all([ api("/api/dashboard"), api("/api/history?limit=25") ]);
+  const stats = $("#dash-stats");
+  stats.innerHTML = "";
+  stats.append(statCard(d.total_bills, "Bills"));
+  stats.append(statCard((d.by_status.processed || 0) + (d.by_status.edited || 0), "Processed"));
+  stats.append(statCard(d.by_status.failed || 0, "Failed"));
+  stats.append(statCard(d.errors, "Errors"));
+  stats.append(statCard(d.warnings, "Warnings"));
+  stats.append(statCard(d.info, "Info"));
+  stats.append(statCard("£" + d.total_spend_gbp.toLocaleString(), "Total spend"));
+
+  const ren = $("#dash-renewals");
+  ren.innerHTML = "";
+  if (!d.upcoming_renewals.length) ren.append(el("div", { class: "tiny", text: "No contracts renewing in the window." }));
+  else {
+    const t = el("table", { class: "data" }, [ el("tr", {}, [
+      el("th", { text: "Supplier" }), el("th", { text: "Bill" }), el("th", { text: "Contract end" }), el("th", { text: "Days out" }),
+    ]) ]);
+    for (const r of d.upcoming_renewals) {
+      const tr = el("tr", { onclick: () => { showView("review"); selectBill(r.id); }, style: "cursor:pointer;" }, [
+        el("td", { text: r.supplier || "(unknown)" }), el("td", { text: r.filename }),
+        el("td", { text: r.contract_end_date || "" }), el("td", { text: String(r.days_out) }),
+      ]);
+      t.append(tr);
+    }
+    ren.append(t);
+  }
+
+  const sup = $("#dash-suppliers");
+  sup.innerHTML = "";
+  if (!d.suppliers.length) sup.append(el("div", { class: "tiny", text: "No suppliers yet." }));
+  else {
+    const t = el("table", { class: "data" }, [ el("tr", {}, [
+      el("th", { text: "Supplier" }), el("th", { text: "Bills" }), el("th", { text: "Total (GBP)" }),
+    ]) ]);
+    for (const s of d.suppliers) t.append(el("tr", {}, [
+      el("td", { text: s.supplier }), el("td", { text: String(s.count) }), el("td", { text: "£" + s.total_gbp.toLocaleString() }),
+    ]));
+    sup.append(t);
+  }
+
+  const h = $("#dash-history");
+  h.innerHTML = "";
+  if (!hist.length) h.append(el("div", { class: "tiny", text: "No activity yet." }));
+  for (const e of hist) h.append(el("div", { class: "row" }, [
+    el("span", { class: "at", text: new Date(e.at).toLocaleString() }),
+    el("span", { class: "ev", text: e.event }),
+    el("span", { text: e.detail || "" }),
+  ]));
+}
+
+/* ---------- insights ---------- */
+function money(x) {
+  return x == null ? "" : "£" + Number(x).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function dataTable(headers, rows) {
+  const t = el("table", { class: "data" });
+  const hr = el("tr");
+  headers.forEach(h => hr.append(el("th", { text: h })));
+  t.append(hr);
+  rows.forEach(r => {
+    const tr = el("tr");
+    r.forEach(c => tr.append(el("td", { text: c == null ? "" : String(c) })));
+    t.append(tr);
+  });
+  return t;
+}
+function fillTable(sel, headers, rows, empty) {
+  const c = $(sel); c.innerHTML = "";
+  if (!rows.length) { c.append(el("div", { class: "tiny", text: empty })); return; }
+  c.append(dataTable(headers, rows));
+}
+
+async function loadInsights() {
+  const d = await api("/api/intelligence");
+
+  const al = $("#ins-alerts"); al.innerHTML = "";
+  if (!d.alerts.length) al.append(el("div", { class: "tiny", text: "Nothing needs attention." }));
+  for (const a of d.alerts) {
+    al.append(el("div", { class: "f " + a.severity }, [
+      el("div", {}, [ el("span", { class: "sv", text: a.severity }), el("span", { class: "msg", text: "  " + a.title }) ]),
+      el("div", { class: "rec", text: a.detail + (a.recommendation ? "  \u2014 " + a.recommendation : "") }),
+    ]));
+  }
+
+  const p = d.portfolio, ps = $("#ins-portfolio"); ps.innerHTML = "";
+  ps.append(statCard(p.total_bills, "Bills"));
+  ps.append(statCard(p.total_sites, "Sites"));
+  ps.append(statCard(p.suppliers, "Suppliers"));
+  ps.append(statCard(money(p.total_spend_gbp), "Total spend"));
+  ps.append(statCard(Number(p.total_consumption_kwh).toLocaleString(), "kWh"));
+  ps.append(statCard(p.avg_unit_rate_elec_p ?? "-", "Avg elec p/kWh"));
+  ps.append(statCard(p.avg_unit_rate_gas_p ?? "-", "Avg gas p/kWh"));
+
+  fillTable("#ins-renewals", ["Supplier", "Bill", "Contract end", "Days", "Urgency"],
+    d.renewals.map(r => [r.supplier || "(unknown)", r.filename, r.contract_end_date || "", r.days_out, r.urgency]),
+    "No contracts renewing in the window.");
+  fillTable("#ins-rates", ["Supplier", "Bill", "Fuel", "Label", "Rate p/kWh", "Baseline", "x median"],
+    d.high_unit_rates.map(h => [h.supplier || "(unknown)", h.filename, h.fuel_type, h.label, h.rate_p_per_kwh, h.baseline_p_per_kwh, h.ratio]),
+    "No high unit rates flagged.");
+  fillTable("#ins-dupes", ["Supplier", "Bill", "Description", "Amount", "Count", "Suspected overcharge"],
+    d.duplicate_charges.map(x => [x.supplier || "(unknown)", x.filename, x.description, money(x.amount_gbp), x.count, money(x.suspected_overcharge_gbp)]),
+    "No duplicate charges detected.");
+  fillTable("#ins-estimated", ["Supplier", "Bill", "Site", "Register"],
+    d.estimated_reads.map(e => [e.supplier || "(unknown)", e.filename, e.site_index, e.register_label || ""]),
+    "No estimated reads.");
+  fillTable("#ins-spend-supplier", ["Supplier", "Bills", "Total", "Avg/bill"],
+    d.spend.by_supplier.map(s => [s.supplier, s.bills, money(s.total_gbp), money(s.avg_bill_gbp)]),
+    "No spend data.");
+  fillTable("#ins-spend-month", ["Month", "Bills", "Total"],
+    d.spend.by_month.map(m => [m.month, m.bills, money(m.total_gbp)]),
+    "No dated bills.");
+  fillTable("#ins-suppliers", ["Supplier", "Bills", "Total", "Elec p/kWh", "Gas p/kWh", "Standing p/day", "Est-read bills", "Errors"],
+    d.supplier_comparison.map(s => [s.supplier, s.bills, money(s.total_gbp), s.avg_unit_rate_elec_p ?? "-", s.avg_unit_rate_gas_p ?? "-", s.avg_standing_charge_p ?? "-", s.estimated_read_bills, s.error_findings]),
+    "No suppliers yet.");
+}
+
+function showView(view) {
+  document.querySelector("main").style.display = view === "review" ? "grid" : "none";
+  $("#dashboard-view").style.display = view === "dashboard" ? "block" : "none";
+  $("#insights-view").style.display = view === "insights" ? "block" : "none";
+  $("#nav-review").classList.toggle("active", view === "review");
+  $("#nav-dashboard").classList.toggle("active", view === "dashboard");
+  $("#nav-insights").classList.toggle("active", view === "insights");
+  if (view === "dashboard") loadDashboard();
+  if (view === "insights") loadInsights();
+}
+
+/* ---------- wire up ---------- */
+function init() {
+  const drop = $("#drop"), input = $("#file-input");
+  drop.addEventListener("click", () => input.click());
+  input.addEventListener("change", () => upload(input.files));
+  ["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("drag"); }));
+  ["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("drag"); }));
+  drop.addEventListener("drop", e => upload(e.dataTransfer.files));
+  $("#export-all").addEventListener("click", () => download("/api/export.xlsx", "voltscope_bills.xlsx"));
+  $("#export-all-csv").addEventListener("click", () => download("/api/export.csv", "voltscope_bills.csv"));
+  $("#nav-review").addEventListener("click", () => showView("review"));
+  $("#nav-dashboard").addEventListener("click", () => showView("dashboard"));
+  $("#nav-insights").addEventListener("click", () => showView("insights"));
+  $("#about-close").addEventListener("click", () => { $("#about").style.display = "none"; });
+  $("#nav-about").addEventListener("click", () => {
+    const a = $("#about");
+    a.style.display = (a.style.display === "none") ? "block" : "none";
+  });
+
+  fetch("/api/health").then(r => r.json()).then(h => {
+    if (!h.extraction_available) $("#warn-banner").style.display = "block";
+    if (h.auth_required && !sessionStorage.getItem("vs_api_key")) promptKey(false);
+  }).catch(() => {}).finally(() => refreshList());
+}
+init();
+</script>
+<footer class="app-footer">Built by <a href="https://shazmoghaddam.github.io/" target="_blank" rel="noopener">Shaz Moghaddam</a> &middot; London</footer>
+</body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "supplier_name": "British Gas Business",
+  "customer_name": "Acme Manufacturing Ltd",
+  "account_number": "1234567890",
+  "invoice_number": "INV-2024-0087",
+  "invoice_date": "2024-03-15",
+  "billing_period_start": "2024-02-01",
+  "billing_period_end": "2024-02-29",
+  "contract_end_date": "2026-01-31",
+  "currency": "GBP",
+  "supply_points": [
+    {
+      "fuel_type": "electricity",
+      "supply_address": "Unit 4, Riverside Industrial Estate, Leeds LS1 2AB",
+      "mpan": "1234567890123",
+      "mprn": null,
+      "meter_serial": "K12A34567",
+      "tariff_name": "Business Fixed 24",
+      "readings": [
+        {"register": "Day", "previous": 10000, "current": 12500, "read_type": "actual", "consumption_kwh": 2500}
+      ],
+      "unit_rates": [
+        {"label": "Day", "rate_p_per_kwh": 24.85}
+      ],
+      "standing_charge_p_per_day": 45.0,
+      "charges": [
+        {"description": "Energy charge", "amount_gbp": 621.25},
+        {"description": "Standing charge", "amount_gbp": 13.05}
+      ]
+    }
+  ],
+  "subtotal_gbp": 634.30,
+  "vat_gbp": 126.86,
+  "total_gbp": 761.16,
+  "low_confidence_fields": [],
+  "extraction_notes": null
+}

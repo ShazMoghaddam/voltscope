@@ -1,0 +1,58 @@
+{
+  "supplier_name": "EDF Energy",
+  "customer_name": "Northgate Logistics Ltd",
+  "account_number": "9988776655",
+  "invoice_number": "INV-99001",
+  "invoice_date": "01/09/2025",
+  "billing_period_start": "2025-07-01",
+  "billing_period_end": "2025-07-31",
+  "contract_end_date": "15/10/2025",
+  "currency": "GBP",
+  "supply_points": [
+    {
+      "fuel_type": "electricity",
+      "supply_address": "Depot 2, Anytown",
+      "mpan": "12 3456 789",
+      "mprn": null,
+      "meter_serial": "M99",
+      "tariff_name": "Flex",
+      "readings": [
+        {
+          "register": "Day",
+          "previous": 5000,
+          "current": 6000,
+          "read_type": "estimated",
+          "consumption_kwh": 1000
+        }
+      ],
+      "unit_rates": [
+        {
+          "label": "Day",
+          "rate_p_per_kwh": 30.0
+        }
+      ],
+      "standing_charge_p_per_day": 50.0,
+      "charges": [
+        {
+          "description": "Energy charge",
+          "amount_gbp": 300.0
+        },
+        {
+          "description": "Energy charge",
+          "amount_gbp": 300.0
+        },
+        {
+          "description": "Standing charge",
+          "amount_gbp": 15.5
+        }
+      ]
+    }
+  ],
+  "subtotal_gbp": 500.0,
+  "vat_gbp": 100.0,
+  "total_gbp": 600.0,
+  "low_confidence_fields": [
+    "supply_points[0].mpan"
+  ],
+  "extraction_notes": "MPAN was partly illegible."
+}

@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Secrets and local config (keep .env.example, never commit .env)
+.env
+
+# Local data and artifacts — may contain real bill data / personal info
+voltscope.db
+*.db
+out/
+bills/
+
+# macOS
+.DS_Store
